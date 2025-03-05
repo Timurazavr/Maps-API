@@ -2,7 +2,7 @@ import os
 import sys
 
 import requests
-from PyQt6 import uic
+from PyQt6 import uic, QtCore
 from PyQt6.QtGui import QPixmap
 from PyQt6.QtWidgets import QApplication, QMainWindow
 
@@ -12,7 +12,7 @@ class Example(QMainWindow):
         super().__init__()
         uic.loadUi("mainwindow.ui", self)
         self.lon, self.lat = "37.618879", "55.751422"
-        self.z = "15"
+        self.z = 15
         self.getImage()
 
     def getImage(self):
@@ -20,7 +20,7 @@ class Example(QMainWindow):
         params = {
             "apikey": "82a98fae-2424-4ed7-ad90-847166e51acf",
             "ll": ",".join((self.lon, self.lat)),
-            "z": self.z,
+            "z": str(self.z),
         }
         response = requests.get(api_server, params=params)
         if not response:
@@ -35,6 +35,17 @@ class Example(QMainWindow):
 
     def closeEvent(self, event):
         os.remove(self.map_file)
+
+    def keyPressEvent(self, event):
+        if event.key() == QtCore.Qt.Key.Key_PageDown:
+            if self.z > 0:
+                print(1)
+                self.z -= 1
+                self.getImage()
+        elif event.key() == QtCore.Qt.Key.Key_PageUp:
+            if self.z < 21:
+                self.z += 1
+                self.getImage()
 
 
 if __name__ == "__main__":
