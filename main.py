@@ -11,7 +11,7 @@ class Example(QMainWindow):
     def __init__(self):
         super().__init__()
         uic.loadUi("mainwindow.ui", self)
-        self.lon, self.lat = "37.618879", "55.751422"
+        self.lon, self.lat = 37.618879, 55.751422
         self.z = 15
         self.getImage()
 
@@ -19,10 +19,11 @@ class Example(QMainWindow):
         api_server = "https://static-maps.yandex.ru/v1"
         params = {
             "apikey": "82a98fae-2424-4ed7-ad90-847166e51acf",
-            "ll": ",".join((self.lon, self.lat)),
+            "ll": ",".join(str(i) for i in [self.lon, self.lat]),
             "z": str(self.z),
         }
         response = requests.get(api_server, params=params)
+        print(response.url)
         if not response:
             print("Ошибка выполнения запроса:")
             print("Http статус:", response.status_code, "(", response.reason, ")")
@@ -46,6 +47,18 @@ class Example(QMainWindow):
             if self.z < 21:
                 self.z += 1
                 self.getImage()
+        elif event.key() == QtCore.Qt.Key.Key_Up:
+            self.lat += self.lat / (2 ** (self.z - 1))
+            self.getImage()
+        elif event.key() == QtCore.Qt.Key.Key_Down:
+            self.lat -= self.lat / (2 ** (self.z - 1))
+            self.getImage()
+        elif event.key() == QtCore.Qt.Key.Key_Left:
+            self.lon -= self.lat / (2 ** (self.z - 1))
+            self.getImage()
+        elif event.key() == QtCore.Qt.Key.Key_Right:
+            self.lon += self.lat / (2 ** (self.z - 1))
+            self.getImage()
 
 
 if __name__ == "__main__":
