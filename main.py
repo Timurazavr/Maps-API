@@ -11,7 +11,7 @@ class Example(QMainWindow):
     def __init__(self):
         super().__init__()
         uic.loadUi("mainwindow.ui", self)
-        self.lon, self.lat = 180, 55.751422
+        self.lon, self.lat = 37.618879, 55.751422
         self.z = 15
         self.getImage()
 
@@ -47,16 +47,24 @@ class Example(QMainWindow):
                 self.z += 1
                 self.getImage()
         elif event.key() == QtCore.Qt.Key.Key_Up:
-            self.lat += 0.05 / 2**self.z
+            self.lat += 90 / 2**self.z
+            if self.lat >= 85:
+                self.lat = -85
             self.getImage()
         elif event.key() == QtCore.Qt.Key.Key_Down:
-            self.lat -= 0.05 / 2**self.z
+            self.lat -= 90 / 2**self.z
+            if self.lat <= -85:
+                self.lat = 85
             self.getImage()
         elif event.key() == QtCore.Qt.Key.Key_Left:
-            self.lon -= 0.1 / 2**self.z
+            self.lon -= 180 / 2**self.z
+            if self.lon <= -180:
+                self.lon = 180
             self.getImage()
         elif event.key() == QtCore.Qt.Key.Key_Right:
-            self.lon += 0.1 / 2**self.z
+            self.lon += 180 / 2**self.z
+            if self.lon >= 180:
+                self.lon = -180
             self.getImage()
 
 
