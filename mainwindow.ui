@@ -45,8 +45,8 @@
      <rect>
       <x>280</x>
       <y>460</y>
-      <width>113</width>
-      <height>28</height>
+      <width>200</width>
+      <height>30</height>
      </rect>
     </property>
     <property name="inputMask">
@@ -59,10 +59,10 @@
    <widget class="QPushButton" name="searchBtn">
     <property name="geometry">
      <rect>
-      <x>400</x>
+      <x>490</x>
       <y>460</y>
-      <width>98</width>
-      <height>31</height>
+      <width>100</width>
+      <height>30</height>
      </rect>
     </property>
     <property name="text">

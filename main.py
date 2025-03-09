@@ -11,25 +11,28 @@ class Example(QMainWindow):
     def __init__(self):
         super().__init__()
         uic.loadUi("mainwindow.ui", self)
-        self.lon, self.lat = 37.618879, 55.751422
         self.z = 15
         self.theme = "light"
         self.themeBtn.clicked.connect(self.change_theme)
-        self.searchBtn.clicked.connect(self.get_coords)
         self.themeBtn.setFocusPolicy(QtCore.Qt.FocusPolicy.ClickFocus)
-        self.getImage()
+        self.searchBtn.clicked.connect(self.get_coords)
+        self.searchEdit.setText("Московский Кремль")
+        self.get_coords()
 
-    def getImage(self, search=None):
+    def getImage(self):
         api_server = "https://static-maps.yandex.ru/v1"
         params = {
             "apikey": "82a98fae-2424-4ed7-ad90-847166e51acf",
+            "ll": ",".join(map(str, (self.lon, self.lat))),
+            "pt": ",".join(
+                (
+                    *map(str, self.search),
+                    "pm2rdm",
+                )
+            ),
             "z": str(self.z),
             "theme": self.theme,
         }
-        if search is not None:
-            self.lon, self.lat = map(float, search)
-            params["pt"] = f"{self.lon},{self.lat},pm2rdm"
-        params["ll"] = ",".join((str(self.lon), str(self.lat)))
         response = requests.get(api_server, params=params)
         if not response:
             print("Ошибка выполнения запроса:")
@@ -73,27 +76,37 @@ class Example(QMainWindow):
             if self.lon >= 180:
                 self.lon = -180
             self.getImage()
-        elif event.key() == 16777220:
+        elif event.key() == QtCore.Qt.Key.Key_Enter:
             self.get_coords()
 
     def change_theme(self):
         self.theme = "light" if self.theme == "dark" else "dark"
-        self.setFocus()
         self.getImage()
+        self.setFocus()
 
     def get_coords(self):
         place = self.searchEdit.text()
-        api_key = "8013b162-6b42-4997-9691-77b7074026e0"
-        geocoder_request = f"http://geocode-maps.yandex.ru/1.x/?apikey={api_key}&geocode={place}&format=json"
-        response = requests.get(geocoder_request)
+        api_server = "http://geocode-maps.yandex.ru/1.x/"
+        params = {
+            "apikey": "8013b162-6b42-4997-9691-77b7074026e0",
+            "geocode": place,
+            "format": "json",
+        }
+        response = requests.get(api_server, params=params)
         try:
             result = response.json()["response"]["GeoObjectCollection"][
                 "featureMember"
             ][0]["GeoObject"]["Point"]["pos"]
-            self.getImage(result.split())
+            self.lon, self.lat = map(float, result.split())
+            self.search = (self.lon, self.lat)
+            self.getImage()
         except Exception:
             pass
         self.setFocus()
+
+    def mousePressEvent(self, event):
+        if event.pos() not in self.searchEdit.rect():
+            self.setFocus()
 
 
 if __name__ == "__main__":
