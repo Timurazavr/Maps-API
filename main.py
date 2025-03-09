@@ -19,7 +19,7 @@ class Example(QMainWindow):
         api_server = "https://static-maps.yandex.ru/v1"
         params = {
             "apikey": "82a98fae-2424-4ed7-ad90-847166e51acf",
-            "ll": ",".join(str(i) for i in [self.lon, self.lat]),
+            "ll": ",".join((str(self.lon), str(self.lat))),
             "z": str(self.z),
         }
         response = requests.get(api_server, params=params)
@@ -40,7 +40,6 @@ class Example(QMainWindow):
     def keyPressEvent(self, event):
         if event.key() == QtCore.Qt.Key.Key_PageDown:
             if self.z > 0:
-                print(1)
                 self.z -= 1
                 self.getImage()
         elif event.key() == QtCore.Qt.Key.Key_PageUp:
@@ -48,16 +47,24 @@ class Example(QMainWindow):
                 self.z += 1
                 self.getImage()
         elif event.key() == QtCore.Qt.Key.Key_Up:
-            self.lat += self.lat / (2 ** (self.z - 1))
+            self.lat += 90 / 2**self.z
+            if self.lat >= 85:
+                self.lat = -85
             self.getImage()
         elif event.key() == QtCore.Qt.Key.Key_Down:
-            self.lat -= self.lat / (2 ** (self.z - 1))
+            self.lat -= 90 / 2**self.z
+            if self.lat <= -85:
+                self.lat = 85
             self.getImage()
         elif event.key() == QtCore.Qt.Key.Key_Left:
-            self.lon -= self.lat / (2 ** (self.z - 1))
+            self.lon -= 180 / 2**self.z
+            if self.lon <= -180:
+                self.lon = 180
             self.getImage()
         elif event.key() == QtCore.Qt.Key.Key_Right:
-            self.lon += self.lat / (2 ** (self.z - 1))
+            self.lon += 180 / 2**self.z
+            if self.lon >= 180:
+                self.lon = -180
             self.getImage()
 
 
