@@ -13,6 +13,9 @@ class Example(QMainWindow):
         uic.loadUi("mainwindow.ui", self)
         self.lon, self.lat = 37.618879, 55.751422
         self.z = 15
+        self.theme = "light"
+        self.themeBtn.clicked.connect(self.change_theme)
+        self.themeBtn.setFocusPolicy(QtCore.Qt.FocusPolicy.ClickFocus)
         self.getImage()
 
     def getImage(self):
@@ -21,9 +24,9 @@ class Example(QMainWindow):
             "apikey": "82a98fae-2424-4ed7-ad90-847166e51acf",
             "ll": ",".join((str(self.lon), str(self.lat))),
             "z": str(self.z),
+            "theme": self.theme,
         }
         response = requests.get(api_server, params=params)
-        print(response.url)
         if not response:
             print("Ошибка выполнения запроса:")
             print("Http статус:", response.status_code, "(", response.reason, ")")
@@ -66,6 +69,11 @@ class Example(QMainWindow):
             if self.lon >= 180:
                 self.lon = -180
             self.getImage()
+
+    def change_theme(self):
+        self.theme = "light" if self.theme == "dark" else "dark"
+        self.getImage()
+        self.setFocus()
 
 
 if __name__ == "__main__":
