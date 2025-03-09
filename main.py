@@ -15,11 +15,14 @@ class Example(QMainWindow):
         self.z = 15
         self.theme = "light"
         self.themeBtn.clicked.connect(self.change_theme)
+        self.searchBtn.clicked.connect(lambda: self.get_coords(self.searchEdit.text()))
         self.themeBtn.setFocusPolicy(QtCore.Qt.FocusPolicy.ClickFocus)
         self.getImage()
 
-    def getImage(self):
+    def getImage(self, search=None):
         api_server = "https://static-maps.yandex.ru/v1"
+        if search is not None:
+            self.lon, self.lat = search
         params = {
             "apikey": "82a98fae-2424-4ed7-ad90-847166e51acf",
             "ll": ",".join((str(self.lon), str(self.lat))),
@@ -50,22 +53,22 @@ class Example(QMainWindow):
                 self.z += 1
                 self.getImage()
         elif event.key() == QtCore.Qt.Key.Key_Up:
-            self.lat += 90 / 2**self.z
+            self.lat += 90 / 2 ** self.z
             if self.lat >= 85:
                 self.lat = -85
             self.getImage()
         elif event.key() == QtCore.Qt.Key.Key_Down:
-            self.lat -= 90 / 2**self.z
+            self.lat -= 90 / 2 ** self.z
             if self.lat <= -85:
                 self.lat = 85
             self.getImage()
         elif event.key() == QtCore.Qt.Key.Key_Left:
-            self.lon -= 180 / 2**self.z
+            self.lon -= 180 / 2 ** self.z
             if self.lon <= -180:
                 self.lon = 180
             self.getImage()
         elif event.key() == QtCore.Qt.Key.Key_Right:
-            self.lon += 180 / 2**self.z
+            self.lon += 180 / 2 ** self.z
             if self.lon >= 180:
                 self.lon = -180
             self.getImage()
@@ -74,6 +77,13 @@ class Example(QMainWindow):
         self.theme = "light" if self.theme == "dark" else "dark"
         self.getImage()
         self.setFocus()
+
+    def get_coords(self, place):
+        api_key = '8013b162-6b42-4997-9691-77b7074026e0'
+        geocoder_request = f"http://geocode-maps.yandex.ru/1.x/?apikey={api_key}&geocode={place}&format=json"
+        response = requests.get(geocoder_request).json()['response']['GeoObjectCollection']['featureMember'][0][
+            'GeoObject']
+        self.getImage(response['Point']['pos'].split())
 
 
 if __name__ == "__main__":
