@@ -21,14 +21,15 @@ class Example(QMainWindow):
 
     def getImage(self, search=None):
         api_server = "https://static-maps.yandex.ru/v1"
-        if search is not None:
-            self.lon, self.lat = search
         params = {
             "apikey": "82a98fae-2424-4ed7-ad90-847166e51acf",
-            "ll": ",".join((str(self.lon), str(self.lat))),
             "z": str(self.z),
             "theme": self.theme,
         }
+        if search is not None:
+            self.lon, self.lat = search
+            params['pt'] = f'{self.lon},{self.lat},pm2rdm'
+        params['ll'] = ",".join((str(self.lon), str(self.lat)))
         response = requests.get(api_server, params=params)
         if not response:
             print("Ошибка выполнения запроса:")
@@ -72,6 +73,8 @@ class Example(QMainWindow):
             if self.lon >= 180:
                 self.lon = -180
             self.getImage()
+        elif event.key() == 16777220:
+            self.get_coords(self.searchEdit.text())
 
     def change_theme(self):
         self.theme = "light" if self.theme == "dark" else "dark"
