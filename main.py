@@ -17,22 +17,20 @@ class Example(QMainWindow):
         self.themeBtn.setFocusPolicy(QtCore.Qt.FocusPolicy.ClickFocus)
         self.searchBtn.clicked.connect(self.get_coords)
         self.searchEdit.setText("Московский Кремль")
+        self.resetBtn.clicked.connect(self.reset)
         self.get_coords()
+        self.search = ()
 
     def getImage(self):
         api_server = "https://static-maps.yandex.ru/v1"
         params = {
             "apikey": "82a98fae-2424-4ed7-ad90-847166e51acf",
             "ll": ",".join(map(str, (self.lon, self.lat))),
-            "pt": ",".join(
-                (
-                    *map(str, self.search),
-                    "pm2rdm",
-                )
-            ),
             "z": str(self.z),
             "theme": self.theme,
         }
+        if self.search != ():
+            params['pt'] = ",".join((*map(str, self.search), "pm2rdm")),
         response = requests.get(api_server, params=params)
         if not response:
             print("Ошибка выполнения запроса:")
@@ -43,6 +41,7 @@ class Example(QMainWindow):
             file.write(response.content)
         self.pixmap = QPixmap(self.map_file)
         self.lbl.setPixmap(self.pixmap)
+        print(response.url)
 
     def closeEvent(self, event):
         os.remove(self.map_file)
@@ -57,22 +56,22 @@ class Example(QMainWindow):
                 self.z += 1
                 self.getImage()
         elif event.key() == QtCore.Qt.Key.Key_Up:
-            self.lat += 90 / 2**self.z
+            self.lat += 90 / 2 ** self.z
             if self.lat >= 85:
                 self.lat = -85
             self.getImage()
         elif event.key() == QtCore.Qt.Key.Key_Down:
-            self.lat -= 90 / 2**self.z
+            self.lat -= 90 / 2 ** self.z
             if self.lat <= -85:
                 self.lat = 85
             self.getImage()
         elif event.key() == QtCore.Qt.Key.Key_Left:
-            self.lon -= 180 / 2**self.z
+            self.lon -= 180 / 2 ** self.z
             if self.lon <= -180:
                 self.lon = 180
             self.getImage()
         elif event.key() == QtCore.Qt.Key.Key_Right:
-            self.lon += 180 / 2**self.z
+            self.lon += 180 / 2 ** self.z
             if self.lon >= 180:
                 self.lon = -180
             self.getImage()
@@ -107,6 +106,10 @@ class Example(QMainWindow):
     def mousePressEvent(self, event):
         if event.pos() not in self.searchEdit.rect():
             self.setFocus()
+
+    def reset(self):
+        self.search = ()
+        self.getImage()
 
 
 if __name__ == "__main__":

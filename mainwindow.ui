@@ -43,7 +43,7 @@
    <widget class="QLineEdit" name="searchEdit">
     <property name="geometry">
      <rect>
-      <x>280</x>
+      <x>160</x>
       <y>460</y>
       <width>200</width>
       <height>30</height>
@@ -59,14 +59,27 @@
    <widget class="QPushButton" name="searchBtn">
     <property name="geometry">
      <rect>
-      <x>490</x>
+      <x>360</x>
       <y>460</y>
-      <width>100</width>
+      <width>81</width>
       <height>30</height>
      </rect>
     </property>
     <property name="text">
      <string>Искать</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="resetBtn">
+    <property name="geometry">
+     <rect>
+      <x>439</x>
+      <y>460</y>
+      <width>121</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Сбросить цель</string>
     </property>
    </widget>
   </widget>
