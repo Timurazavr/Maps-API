@@ -7,18 +7,18 @@
     <x>0</x>
     <y>0</y>
     <width>600</width>
-    <height>500</height>
+    <height>530</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QLabel" name="lbl">
+   <widget class="QLabel" name="photoLbl">
     <property name="geometry">
      <rect>
       <x>0</x>
-      <y>0</y>
+      <y>30</y>
       <width>600</width>
       <height>450</height>
      </rect>
@@ -30,9 +30,9 @@
    <widget class="QPushButton" name="themeBtn">
     <property name="geometry">
      <rect>
-      <x>10</x>
-      <y>460</y>
-      <width>150</width>
+      <x>470</x>
+      <y>490</y>
+      <width>125</width>
       <height>30</height>
      </rect>
     </property>
@@ -43,9 +43,9 @@
    <widget class="QLineEdit" name="searchEdit">
     <property name="geometry">
      <rect>
-      <x>160</x>
-      <y>460</y>
-      <width>200</width>
+      <x>5</x>
+      <y>490</y>
+      <width>275</width>
       <height>30</height>
      </rect>
     </property>
@@ -59,9 +59,9 @@
    <widget class="QPushButton" name="searchBtn">
     <property name="geometry">
      <rect>
-      <x>360</x>
-      <y>460</y>
-      <width>81</width>
+      <x>285</x>
+      <y>490</y>
+      <width>75</width>
       <height>30</height>
      </rect>
     </property>
@@ -72,14 +72,30 @@
    <widget class="QPushButton" name="resetBtn">
     <property name="geometry">
      <rect>
-      <x>439</x>
-      <y>460</y>
-      <width>121</width>
+      <x>365</x>
+      <y>490</y>
+      <width>100</width>
       <height>30</height>
      </rect>
     </property>
     <property name="text">
      <string>Сбросить цель</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="resultLbl">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>5</y>
+      <width>600</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="alignment">
+     <set>Qt::AlignCenter</set>
     </property>
    </widget>
   </widget>
