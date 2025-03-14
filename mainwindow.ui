@@ -45,7 +45,7 @@
      <rect>
       <x>5</x>
       <y>490</y>
-      <width>275</width>
+      <width>200</width>
       <height>30</height>
      </rect>
     </property>
@@ -96,6 +96,19 @@
     </property>
     <property name="alignment">
      <set>Qt::AlignCenter</set>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="indexBox">
+    <property name="geometry">
+     <rect>
+      <x>215</x>
+      <y>490</y>
+      <width>80</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Индекс</string>
     </property>
    </widget>
   </widget>

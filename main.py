@@ -21,7 +21,9 @@ class Example(QMainWindow):
         self.themeBtn.setFocusPolicy(QtCore.Qt.FocusPolicy.NoFocus)
         self.searchBtn.setFocusPolicy(QtCore.Qt.FocusPolicy.NoFocus)
         self.resetBtn.setFocusPolicy(QtCore.Qt.FocusPolicy.NoFocus)
+        self.indexBox.setFocusPolicy(QtCore.Qt.FocusPolicy.NoFocus)
         self.searchEdit.setFocusPolicy(QtCore.Qt.FocusPolicy.ClickFocus)
+        self.indexBox.checkStateChanged.connect(self.get_coords)
         self.get_coords()
 
     def getImage(self):
@@ -105,13 +107,25 @@ class Example(QMainWindow):
         try:
             result = response.json()["response"]["GeoObjectCollection"][
                 "featureMember"
-            ][0]["GeoObject"]["Point"]["pos"]
-            self.adress = response.json()["response"]["GeoObjectCollection"][
-                "featureMember"
-            ][0]["GeoObject"]["metaDataProperty"]["GeocoderMetaData"]["text"]
-            self.lon, self.lat = map(float, result.split())
+            ][0]["GeoObject"]
+            self.adress = result["metaDataProperty"]["GeocoderMetaData"]["text"]
+            if self.indexBox.isChecked():
+                if (
+                    "postal_code"
+                    in result["metaDataProperty"]["GeocoderMetaData"]["Address"]
+                ):
+                    self.adress = (
+                        result["metaDataProperty"]["GeocoderMetaData"]["Address"][
+                            "postal_code"
+                        ]
+                        + ", "
+                        + self.adress
+                    )
+                else:
+                    self.adress = "Индекс не указан, " + self.adress
+            self.lon, self.lat = map(float, result["Point"]["pos"].split())
             self.search = (self.lon, self.lat)
-        except Exception:
+        except ZeroDivisionError:
             self.search = ()
         self.getImage()
 
