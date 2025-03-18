@@ -133,7 +133,7 @@ class Example(QMainWindow):
                     )
                 if res and min(res)[0] < 100:
                     self.adress += " - " + min(res)[1]
-        except ZeroDivisionError:
+        except Exception:
             self.pt = None
         self.getImage()
 
