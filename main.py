@@ -2,10 +2,31 @@ import os
 import sys
 
 import requests
-from PyQt6 import uic, QtCore
+from PyQt6 import uic, QtCore, QtGui
 from PyQt6.QtGui import QPixmap
 from PyQt6.QtWidgets import QApplication, QMainWindow
 from decimal import Decimal
+from math import pi, cos, sin, sqrt, atan2
+
+
+def calculate_s(lon1, lag1, lon2, lag2):
+    EARTH_RADIUS = 6372795
+    lat1 = lon1 * pi / 180
+    lat2 = lon2 * pi / 180
+    long1 = lag1 * pi / 180
+    long2 = lag2 * pi / 180
+    cl1 = cos(lat1)
+    cl2 = cos(lat2)
+    sl1 = sin(lat1)
+    sl2 = sin(lat2)
+    delta = long2 - long1
+    cdelta = cos(delta)
+    sdelta = sin(delta)
+    y = sqrt(pow(cl2 * sdelta, 2) + pow(cl1 * sl2 - sl1 * cl2 * cdelta, 2))
+    x = sl1 * sl2 + cl1 * cl2 * cdelta
+    ad = atan2(y, x)
+    dist = ad * EARTH_RADIUS
+    return dist
 
 
 class Example(QMainWindow):
@@ -30,7 +51,7 @@ class Example(QMainWindow):
     def getImage(self):
         api_server = "https://static-maps.yandex.ru/v1"
         params = {
-            "apikey": "f3a0fe3a-b07e-4840-a1da-06f18b2ddf13",
+            "apikey": "82a98fae-2424-4ed7-ad90-847166e51acf",
             "ll": ",".join(map(str, self.ll)),
             "z": self.z,
             "theme": self.theme,
@@ -56,7 +77,7 @@ class Example(QMainWindow):
 
         # print(response.url)
 
-    def search(self, *args, coord: list | None = None):
+    def search(self, *args, coord: list | None = None, org: bool = False):
         place = self.searchEdit.text()
         api_server = "http://geocode-maps.yandex.ru/1.x/"
         params = {
@@ -88,22 +109,63 @@ class Example(QMainWindow):
                 self.pt = self.ll.copy()
             else:
                 self.pt = coord.copy()
-        except Exception as err:
+            if org:
+                api_server = "https://search-maps.yandex.ru/v1/"
+                params = {
+                    "apikey": "dda3ddba-c9ea-4ead-9010-f43fbc15c6e3",
+                    "text": self.adress[self.adress.find(",") + 2 :],
+                    "lang": "ru_RU",
+                    "type": "biz",
+                    "spn": "0.001,0.001",
+                    "results": 3,
+                }
+                response = requests.get(api_server, params=params)
+                data = response.json().get("features", [])
+                res = []
+                for i in data:
+                    res.append(
+                        (
+                            calculate_s(
+                                *i["geometry"]["coordinates"], *map(float, coord)
+                            ),
+                            i["properties"]["CompanyMetaData"]["name"],
+                        )
+                    )
+                if res and min(res)[0] < 100:
+                    self.adress += " - " + min(res)[1]
+        except ZeroDivisionError:
             self.pt = None
         self.getImage()
 
-    def mousePressEvent(self, event):
+    def mousePressEvent(self, event: QtGui.QMouseEvent):
         if self.z > 7:
             x, y = event.pos().x(), event.pos().y()
             if 0 <= x <= 600 and 30 <= y <= 480:
-                self.search(
-                    coord=[
-                        self.ll[0]
-                        + Decimal("0.0002") / 300 * (x - 300) * 2 ** (21 - self.z),
-                        self.ll[1]
-                        - Decimal("0.000086") / 225 * (y - 255) * 2 ** (21 - self.z),
-                    ]
-                )
+                if event.button() == QtCore.Qt.MouseButton.LeftButton:
+                    self.search(
+                        coord=[
+                            self.ll[0]
+                            + Decimal("0.0002") / 300 * (x - 300) * 2 ** (21 - self.z),
+                            self.ll[1]
+                            - Decimal("0.000086")
+                            / 225
+                            * (y - 255)
+                            * 2 ** (21 - self.z),
+                        ]
+                    )
+                elif event.button() == QtCore.Qt.MouseButton.RightButton:
+                    self.search(
+                        coord=[
+                            self.ll[0]
+                            + Decimal("0.0002") / 300 * (x - 300) * 2 ** (21 - self.z),
+                            self.ll[1]
+                            - Decimal("0.000086")
+                            / 225
+                            * (y - 255)
+                            * 2 ** (21 - self.z),
+                        ],
+                        org=True,
+                    )
 
     def keyPressEvent(self, event):
         if event.key() == QtCore.Qt.Key.Key_PageDown:
