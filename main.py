@@ -1,10 +1,11 @@
 import os
 import sys
-
 import requests
-from PyQt6 import uic, QtCore, QtGui
+
+from PyQt6 import QtCore, QtGui, QtWidgets
 from PyQt6.QtGui import QPixmap
 from PyQt6.QtWidgets import QApplication, QMainWindow
+
 from decimal import Decimal
 from math import pi, cos, sin, sqrt, atan2
 
@@ -30,9 +31,53 @@ def calculate_s(lon1, lag1, lon2, lag2):
 
 
 class Example(QMainWindow):
+    def setupUi(self, MainWindow):
+        MainWindow.setObjectName("MainWindow")
+        MainWindow.resize(600, 530)
+        self.centralwidget = QtWidgets.QWidget(parent=MainWindow)
+        self.centralwidget.setObjectName("centralwidget")
+        self.photoLbl = QtWidgets.QLabel(parent=self.centralwidget)
+        self.photoLbl.setGeometry(QtCore.QRect(0, 30, 600, 450))
+        self.photoLbl.setText("")
+        self.photoLbl.setObjectName("photoLbl")
+        self.themeBtn = QtWidgets.QPushButton(parent=self.centralwidget)
+        self.themeBtn.setGeometry(QtCore.QRect(470, 490, 125, 30))
+        self.themeBtn.setObjectName("themeBtn")
+        self.searchEdit = QtWidgets.QLineEdit(parent=self.centralwidget)
+        self.searchEdit.setGeometry(QtCore.QRect(5, 490, 200, 30))
+        self.searchEdit.setInputMask("")
+        self.searchEdit.setText("")
+        self.searchEdit.setObjectName("searchEdit")
+        self.searchBtn = QtWidgets.QPushButton(parent=self.centralwidget)
+        self.searchBtn.setGeometry(QtCore.QRect(285, 490, 75, 30))
+        self.searchBtn.setObjectName("searchBtn")
+        self.resetBtn = QtWidgets.QPushButton(parent=self.centralwidget)
+        self.resetBtn.setGeometry(QtCore.QRect(365, 490, 100, 30))
+        self.resetBtn.setObjectName("resetBtn")
+        self.resultLbl = QtWidgets.QLabel(parent=self.centralwidget)
+        self.resultLbl.setGeometry(QtCore.QRect(0, 5, 600, 20))
+        self.resultLbl.setText("")
+        self.resultLbl.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        self.resultLbl.setObjectName("resultLbl")
+        self.indexBox = QtWidgets.QCheckBox(parent=self.centralwidget)
+        self.indexBox.setGeometry(QtCore.QRect(215, 490, 80, 30))
+        self.indexBox.setObjectName("indexBox")
+        MainWindow.setCentralWidget(self.centralwidget)
+
+        self.retranslateUi(MainWindow)
+        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
+    def retranslateUi(self, MainWindow):
+        _translate = QtCore.QCoreApplication.translate
+        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        self.themeBtn.setText(_translate("MainWindow", "Переключить тему"))
+        self.searchBtn.setText(_translate("MainWindow", "Искать"))
+        self.resetBtn.setText(_translate("MainWindow", "Сбросить цель"))
+        self.indexBox.setText(_translate("MainWindow", "Индекс"))
+
     def __init__(self):
         super().__init__()
-        uic.loadUi("mainwindow.ui", self)
+        self.setupUi(self)
         self.z = 15
         self.theme = "light"
         self.themeBtn.clicked.connect(self.change_theme)
